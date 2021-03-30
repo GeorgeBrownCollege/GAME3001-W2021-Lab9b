@@ -75,13 +75,13 @@ bool Scene::sortObjects(DisplayObject* left, DisplayObject* right)
 void Scene::updateDisplayList()
 {
 	std::sort(m_displayList.begin(), m_displayList.end(), sortObjects);
-	for (auto& count : m_displayList)
+	for (auto& display_object : m_displayList)
 	{
-		if (count != nullptr)
+		if (display_object != nullptr)
 		{
-			if (!count->isEnabled())
+			if (!display_object->isEnabled())
 				break;
-			count->update();
+			display_object->update();
 		}
 	}	
 }
@@ -89,13 +89,15 @@ void Scene::updateDisplayList()
 void Scene::drawDisplayList()
 {
 	std::sort(m_displayList.begin(), m_displayList.end(), sortObjects);
-	for (auto& count : m_displayList)
+	for (auto& display_object : m_displayList)
 	{
-		if (count != nullptr)
+		if (display_object != nullptr)
 		{
-			if (!count->isEnabled())
-				break;
-			count->draw();
+			if (display_object->isEnabled() && display_object->isVisible())
+			{
+				display_object->draw();
+			}
+			
 		}
 	}
 
