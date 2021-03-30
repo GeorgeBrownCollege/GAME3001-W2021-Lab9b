@@ -112,7 +112,10 @@ void PlayScene::start()
 	m_pTarget->getTransform()->position = glm::vec2(600.0f, 300.0f);
 	addChild(m_pTarget);
 
-
+	// path node test
+	m_pPathNode = new PathNode();
+	m_pPathNode->getTransform()->position = glm::vec2(400.0f, 100.0f);
+	addChild(m_pPathNode);
 	
 }
 

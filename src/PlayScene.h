@@ -9,6 +9,7 @@
 #include "FloatCondition.h"
 #include "Label.h"
 #include "Obstacle.h"
+#include "PathNode.h"
 #include "ship.h"
 #include "SpaceShip.h"
 #include "StateMachine.h"
@@ -49,9 +50,10 @@ private:
 	Condition* m_pIsWithinDetectionRadiusCondition;
 	FloatCondition* m_pIsWithinCombatRangeCondition;
 
-	
 	StateMachine* m_pStateMachine;
 	void m_buildStateMachine();
+
+	PathNode* m_pPathNode;
 };
 
 

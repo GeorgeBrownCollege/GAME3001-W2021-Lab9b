@@ -1,7 +1,8 @@
 #pragma once
 #ifndef __GAME_OBJECT_TYPE__
 #define __GAME_OBJECT_TYPE__
-enum GameObjectType {
+enum GameObjectType
+{
 	NONE = -1,
 	SPACE_SHIP,
 	OBSTACLE,
@@ -9,6 +10,7 @@ enum GameObjectType {
 	TARGET,
 	PLAYER,
 	PLANE,
+	PATH_NODE,
 	START_BUTTON,
 	RESTART_BUTTON,
 	BACK_BUTTON,
