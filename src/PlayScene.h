@@ -42,7 +42,6 @@ private:
 	Obstacle* m_pObstacle1;
 	Obstacle* m_pObstacle2;
 	Obstacle* m_pObstacle3;
-	void m_CheckShipLOS(DisplayObject* object);
 
 	// State Machine properties
 
@@ -55,6 +54,8 @@ private:
 
 	std::vector<PathNode*> m_pGrid;
 	void m_buildGrid();
+
+	void m_CheckAgentLOS(Agent* agent, DisplayObject* object);
 };
 
 

@@ -37,8 +37,8 @@ void PlayScene::update()
 {
 	updateDisplayList();
 
-	m_CheckShipLOS(m_pTarget);
-
+	
+	m_CheckAgentLOS(m_pShip, m_pTarget);
 }
 
 void PlayScene::clean()
@@ -178,34 +178,6 @@ void PlayScene::GUI_Function()
 	ImGui::StyleColorsDark();
 }
 
-void PlayScene::m_CheckShipLOS(DisplayObject* target_object)
-{
-	// if ship to target distance is less than or equal to LOS Distance
-	auto ShipToTargetDistance = Util::distance(m_pShip->getTransform()->position, target_object->getTransform()->position);
-	if (ShipToTargetDistance <= m_pShip->getLOSDistance())
-	{
-		std::vector<DisplayObject*> contactList;
-		for (auto object : getDisplayList())
-		{
-			// check if object is farther than than the target
-			auto ShipToObjectDistance = Util::distance(m_pShip->getTransform()->position, object->getTransform()->position);
-
-			if (ShipToObjectDistance <= ShipToTargetDistance)
-			{
-				if ((object->getType() != m_pShip->getType()) && (object->getType() != target_object->getType()))
-				{
-					contactList.push_back(object);
-				}
-			}
-		}
-		contactList.push_back(target_object); // add the target to the end of the list
-		auto hasLOS = CollisionManager::LOSCheck(m_pShip->getTransform()->position,
-			m_pShip->getTransform()->position + m_pShip->getCurrentDirection() * m_pShip->getLOSDistance(), contactList, target_object);
-
-		m_pShip->setHasLOS(hasLOS);
-	}
-}
-
 void PlayScene::m_buildStateMachine()
 {
 	// define conditions
@@ -270,5 +242,33 @@ void PlayScene::m_buildGrid()
 			addChild(path_node);
 			m_pGrid.push_back(path_node);
 		}
+	}
+}
+
+void PlayScene::m_CheckAgentLOS(Agent* agent, DisplayObject* object)
+{
+	// if agent to object distance is less than or equal to LOS Distance
+	auto AgentToObjectDistance = Util::distance(agent->getTransform()->position, object->getTransform()->position);
+	if (AgentToObjectDistance <= agent->getLOSDistance())
+	{
+		std::vector<DisplayObject*> contactList;
+		for (auto display_object : getDisplayList())
+		{
+			// check if obstacle is farther than than the object
+			auto AgentToObstacleDistance = Util::distance(agent->getTransform()->position, display_object->getTransform()->position);
+
+			if (AgentToObstacleDistance <= AgentToObjectDistance)
+			{
+				if ((display_object->getType() != agent->getType()) && (display_object->getType() != object->getType()))
+				{
+					contactList.push_back(display_object);
+				}
+			}
+		}
+		contactList.push_back(object); // add the target to the end of the list
+		auto hasLOS = CollisionManager::LOSCheck(agent->getTransform()->position,
+			agent->getTransform()->position + agent->getCurrentDirection() * agent->getLOSDistance(), contactList, object);
+
+		agent->setHasLOS(hasLOS);
 	}
 }
