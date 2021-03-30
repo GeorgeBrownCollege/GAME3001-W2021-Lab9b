@@ -85,6 +85,8 @@ void PlayScene::start()
 	// Set GUI Title
 	m_guiTitle = "Play Scene";
 
+	m_buildGrid();
+	
 	// add the ship to the scene as a start point
 	m_pShip = new Ship();
 	m_pShip->getTransform()->position = glm::vec2(200.0f, 300.0f);
@@ -99,24 +101,19 @@ void PlayScene::start()
 	m_pObstacle2 = new Obstacle();
 	m_pObstacle2->getTransform()->position = glm::vec2(400.0f, 100.0f);
 	addChild(m_pObstacle2);
-	m_pObstacle2->setVisible(false);
+	m_pObstacle2->setEnabled(false);
 
 	// add the Obstacle to the scene as a start point
 	m_pObstacle3 = new Obstacle();
 	m_pObstacle3->getTransform()->position = glm::vec2(600.0f, 500.0f);
 	addChild(m_pObstacle3);
-	m_pObstacle3->setVisible(false);
+	m_pObstacle3->setEnabled(false);
 	
 	// added the target to the scene a goal
 	m_pTarget = new Target();
 	m_pTarget->getTransform()->position = glm::vec2(600.0f, 300.0f);
 	addChild(m_pTarget);
 
-	// path node test
-	m_pPathNode = new PathNode();
-	m_pPathNode->getTransform()->position = glm::vec2(400.0f, 100.0f);
-	addChild(m_pPathNode);
-	
 }
 
 void PlayScene::GUI_Function() 
@@ -256,4 +253,22 @@ void PlayScene::m_buildStateMachine()
 	m_pStateMachine->setCurrentState(patrolState);
 
 
+}
+
+void PlayScene::m_buildGrid()
+{
+	auto tileSize = Config::TILE_SIZE;
+
+	// add path_nodes to the Grid
+	for (int row = 0; row < Config::ROW_NUM; ++row)
+	{
+		for (int col = 0; col < Config::COL_NUM; ++col)
+		{
+			PathNode* path_node = new PathNode();
+			path_node->getTransform()->position = glm::vec2(
+				(col * tileSize) + tileSize * 0.5f, (row * tileSize) + tileSize * 0.5f);
+			addChild(path_node);
+			m_pGrid.push_back(path_node);
+		}
+	}
 }
