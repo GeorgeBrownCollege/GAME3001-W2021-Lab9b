@@ -23,12 +23,13 @@ PlayScene::~PlayScene()
 
 void PlayScene::draw()
 {
+
+	drawDisplayList();
+	
 	if(EventManager::Instance().isIMGUIActive())
 	{
 		GUI_Function();	
 	}
-
-	drawDisplayList();
 
 	SDL_SetRenderDrawColor(Renderer::Instance()->getRenderer(), 255, 255, 255, 255);
 }
@@ -37,8 +38,9 @@ void PlayScene::update()
 {
 	updateDisplayList();
 
-	
-	m_CheckAgentLOS(m_pShip, m_pTarget);
+	//m_CheckAgentLOS(m_pShip, m_pTarget);
+
+	m_CheckPathNodeLOS();
 }
 
 void PlayScene::clean()
@@ -76,6 +78,8 @@ void PlayScene::handleEvents()
 
 	if (EventManager::Instance().isKeyDown(SDL_SCANCODE_G))
 	{
+		m_gridVisible = !m_gridVisible;
+		m_toggleGrid(m_gridVisible);
 	}
 	
 }
@@ -90,7 +94,8 @@ void PlayScene::start()
 	// add the ship to the scene as a start point
 	m_pShip = new Ship();
 	m_pShip->getTransform()->position = glm::vec2(200.0f, 300.0f);
-	addChild(m_pShip, 2);
+	/*addChild(m_pShip, 2);
+	m_pShip->setEnabled(false);*/
 
 	// add the Obstacle to the scene as a start point
 	m_pObstacle1 = new Obstacle();
@@ -101,13 +106,13 @@ void PlayScene::start()
 	m_pObstacle2 = new Obstacle();
 	m_pObstacle2->getTransform()->position = glm::vec2(400.0f, 100.0f);
 	addChild(m_pObstacle2);
-	m_pObstacle2->setEnabled(false);
+
 
 	// add the Obstacle to the scene as a start point
 	m_pObstacle3 = new Obstacle();
 	m_pObstacle3->getTransform()->position = glm::vec2(600.0f, 500.0f);
 	addChild(m_pObstacle3);
-	m_pObstacle3->setEnabled(false);
+
 	
 	// added the target to the scene a goal
 	m_pTarget = new Target();
@@ -127,8 +132,17 @@ void PlayScene::GUI_Function()
 	// See examples by uncommenting the following - also look at imgui_demo.cpp in the IMGUI filter
 	//ImGui::ShowDemoWindow();
 	
-	ImGui::Begin("GAME3001 - Lab 7", nullptr, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_MenuBar);
+	ImGui::Begin("GAME3001 - Lab 9", nullptr, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_MenuBar);
 
+	static bool gridVisible = true;
+	if(ImGui::Checkbox("Toggle Grid", &gridVisible))
+	{
+		m_toggleGrid(gridVisible);
+	}
+
+	
+	ImGui::Separator();
+	
 	// allow ship rotation
 	static int angle;
 	if(ImGui::SliderInt("Ship Direction", &angle, -360, 360))
@@ -270,5 +284,26 @@ void PlayScene::m_CheckAgentLOS(Agent* agent, DisplayObject* object)
 			agent->getTransform()->position + agent->getCurrentDirection() * agent->getLOSDistance(), contactList, object);
 
 		agent->setHasLOS(hasLOS);
+	}
+}
+
+void PlayScene::m_CheckPathNodeLOS()
+{
+	for (auto path_node : m_pGrid)
+	{
+		auto targetDirection = m_pTarget->getTransform()->position - path_node->getTransform()->position;
+		auto normalizedDirection = Util::normalize(targetDirection);
+		path_node->setCurrentDirection(normalizedDirection);
+		m_CheckAgentLOS(path_node, m_pTarget);
+	}
+}
+
+void PlayScene::m_toggleGrid(bool state)
+{
+	
+
+	for (auto path_node : m_pGrid)
+	{
+		path_node->setVisible(state);
 	}
 }
